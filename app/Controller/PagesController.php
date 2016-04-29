@@ -88,7 +88,8 @@ class PagesController extends AppController {
 		if($url == 'issues') {
 			$ch = curl_init('http://jira.xenyo.net/rest/api/2/search?jql=updated>=' . $criteria . '+order+by+updated+asc&startAt=' . $startAt . '&maxResults=30');
 		} elseif($url == 'worklog') {
-			$ch = curl_init('http://jira.xenyo.net/rest/api/2/issue/' . $criteria);
+			//$ch = curl_init('http://jira.xenyo.net/rest/api/2/issue/' . $criteria);
+			$ch = curl_init('http://jira.xenyo.net/rest/api/2/issue/' . $criteria . '/worklog');
 		}
 		
 		curl_setopt($ch, CURLOPT_USERPWD, 'matt:xenyo4748');

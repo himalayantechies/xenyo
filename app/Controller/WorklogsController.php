@@ -135,11 +135,15 @@ class WorklogsController extends AppController {
 		return $this->redirect($this->referer());
 	}
 	
-	public function updateWorkLogs() {
+	public function updateWorkLogs($issue_id = null) {
 		$this->autoRender = false;
 		$epic = 0;
 		$options['contain'] 	= false;
-		$options['conditions'] 	= array('worklog' => 0);
+		if(is_null($issue_id)) {
+			$options['conditions'] 	= array('worklog' => 0);
+		} else {
+			$options['conditions'] 	= array('id' => $issue_id);
+		}
 		$options['limit'] 		= 5;
 		$issues = $this->Worklog->Epic->find('all', $options);
 		if(count($issues) > 0) {
@@ -147,6 +151,7 @@ class WorklogsController extends AppController {
 		} else {
 			$issues = $this->Worklog->Issue->find('all', $options);
 		}
+		//debug($issues);
 		$return = '';
 		foreach($issues as $count => $result) {
 			if(isset($result['Epic'])) {
@@ -156,6 +161,8 @@ class WorklogsController extends AppController {
 			$return .= $result['Issue']['id'] . '<br />';
 			$worklogs = file_get_contents(Router::url(array('controller' => 'pages', 'action' => 'curl', 'worklog', $result['Issue']['id']), true));
 			$worklogs = json_decode($worklogs, true);
+			
+			debug($worklogs);
 
 			$this->Worklog->deleteAll(array('Worklog.issue_id' => $result['Issue']['id']), true);
 			
@@ -170,7 +177,8 @@ class WorklogsController extends AppController {
 					}
 				}
 			} else {
-				foreach($worklogs['fields']['worklog']['worklogs'] as $worklog) {
+				//foreach($worklogs['fields']['worklog']['worklogs'] as $worklog) {
+				foreach($worklogs['worklogs'] as $worklog) {
 					$user = array();
 					$this->loadModel('User');
 					$user['User']['name'] 		= (isset($worklog['author']['displayName']))?$worklog['author']['displayName']: '';
