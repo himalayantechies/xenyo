@@ -151,7 +151,6 @@ class WorklogsController extends AppController {
 		} else {
 			$issues = $this->Worklog->Issue->find('all', $options);
 		}
-		//debug($issues);
 		$return = '';
 		foreach($issues as $count => $result) {
 			if(isset($result['Epic'])) {
@@ -162,8 +161,6 @@ class WorklogsController extends AppController {
 			$worklogs = file_get_contents(Router::url(array('controller' => 'pages', 'action' => 'curl', 'worklog', $result['Issue']['id']), true));
 			$worklogs = json_decode($worklogs, true);
 			
-			debug($worklogs);
-
 			$this->Worklog->deleteAll(array('Worklog.issue_id' => $result['Issue']['id']), true);
 			
 			if(isset($worklogs['errorMessages'][0])) {
@@ -227,6 +224,10 @@ class WorklogsController extends AppController {
 				}
 			}
 		}
-		return $return;
+		if(is_null($issue_id)) {
+			return $return;
+		} else {
+			$this->redirect($this->referer());
+		}
 	}
 }

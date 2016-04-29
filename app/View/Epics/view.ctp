@@ -9,6 +9,7 @@
                     <?php echo $this->Html->link(__('Edit Epic'), array('action' => 'edit', $epic['Epic']['id']), array('class' => 'btn purple')); ?>
                     <?php echo $this->Html->link(__('Add Epic'), array('action' => 'add'), array('class' => 'btn green')); ?>
                     <?php echo $this->Form->postLink($this->Html->tag('i', '', array('class' => 'fa fa-trash-o')), array('action' => 'delete', $epic['Epic']['id']), array('class' => 'btn default btn-xs grey', 'escape' => false), __('Are you sure you want to delete # %s?', $epic['Epic']['id'])); ?>
+                    <?php echo $this->Html->link(__('Update Worklog'), array('controller' => 'worklogs', 'action' => 'updateWorkLogs', $epic['Epic']['id']), array('class' => 'btn yellow')); ?>
                 </div>                    
 			</div>
 			<div class="portlet-body">
