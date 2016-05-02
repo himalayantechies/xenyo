@@ -158,11 +158,18 @@ class WorklogsController extends AppController {
 				$return .= 'Epic: ';
 			}
 			$return .= $result['Issue']['id'] . '<br />';
-			$worklogs = file_get_contents(Router::url(array('controller' => 'pages', 'action' => 'curl', 'worklog', $result['Issue']['id']), true));
+			
+			$ch 	= curl_init();
+			curl_setopt_array($ch, array(
+					CURLOPT_URL 			=> 'http://jira.xenyo.net/rest/api/2/issue/' . $result['Issue']['id'] . '/worklog',
+					CURLOPT_USERPWD 		=> 'matt:xenyo4748',
+					CURLOPT_HTTPHEADER 		=> array('Content-type: application/json'),
+					CURLOPT_RETURNTRANSFER 	=> true));
+			$worklogs = curl_exec($ch);
+			curl_close($ch);
+				
 			$worklogs = json_decode($worklogs, true);
-			
-			//debug($worklogs);
-			
+				
 			$this->Worklog->deleteAll(array('Worklog.issue_id' => $result['Issue']['id']), true);
 			
 			if(isset($worklogs['errorMessages'][0])) {

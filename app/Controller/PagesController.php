@@ -85,6 +85,11 @@ class PagesController extends AppController {
 	public function curl($url, $criteria, $startAt = 0) {
 		$this->autoRender = false;
 		
+		//$issues = file_get_contents(Router::url(array('controller' => 'pages', 'action' => 'curl', 'issues', $updated, $startAt), true));
+		//$issues = json_decode($issues, true);
+		//$worklogs = file_get_contents(Router::url(array('controller' => 'pages', 'action' => 'curl', 'worklog', $result['Issue']['id']), true));
+		//$worklogs = json_decode($worklogs, true);
+		
 		if($url == 'issues') {
 			$ch = curl_init('http://jira.xenyo.net/rest/api/2/search?jql=updated>=' . $criteria . '+order+by+updated+asc&startAt=' . $startAt . '&maxResults=30');
 		} elseif($url == 'worklog') {
