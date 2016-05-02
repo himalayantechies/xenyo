@@ -385,7 +385,7 @@ class EpicsController extends AppController {
 			
 			if($epics[$e_key]['Epic']['project_budget_hours'] > $epics[$e_key]['Epic']['hours_spent']) {
 				$epics[$e_key]['Epic']['project_rate'] = $epic['Epic']['business_value']/$epics[$e_key]['Epic']['project_budget_hours'];
-			} elseif($epics[$e_key]['Epic']['project_budget_hours'] > $epics[$e_key]['Epic']['hours_spent'] || $epics[$e_key]['Epic']['status'] == 'Closed') {
+			} elseif($epics[$e_key]['Epic']['project_budget_hours'] < $epics[$e_key]['Epic']['hours_spent'] || $epics[$e_key]['Epic']['status'] == 'Closed') {
 				$epics[$e_key]['Epic']['project_rate'] = $epic['Epic']['business_value']/$epics[$e_key]['Epic']['hours_spent'];
 			}
 			

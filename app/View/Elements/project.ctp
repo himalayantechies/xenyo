@@ -17,8 +17,9 @@
                                 <th class="col-md-1">BV</th>
                                 <th class="col-md-1">Project Budget Hours</th>
                                 <th class="col-md-1">Total Hours Spent</th>
-                                <th class="col-md-1">Total Hours Remaining</th>
-                                <th class="col-md-1">Complete %</th>
+                                <!-- <th class="col-md-1">Total Hours Remaining</th>
+                                	 <th class="col-md-1">Complete %</th> -->
+								<th class="col-md-1">Status</th>
                                 <th class="col-md-1">Project Rate</th>
                                 <th class="col-md-1">Month Hours</th>
                                 <th class="col-md-1">Value Completed</th>
@@ -39,7 +40,7 @@
                     			$value_completed 		+= $issue['Epic']['value_completed'];
                     			$class 					= '';
                     			//if($issue['Epic']['complete_percentage'] == 1) {
-                    			if($issue['Epic']['status'] == 'Open') {
+                    			if($issue['Epic']['status'] != 'Closed') {
                     				if($issue['Epic']['hours_spent'] > $issue['Epic']['project_budget_hours']) {
                     					$class = 'danger';
                     				}
@@ -64,8 +65,9 @@
 								?></td>
 								<td class="amount"><?php echo number_format($issue['Epic']['project_budget_hours'], 2); ?></td>
 								<td class="amount"><?php echo number_format($issue['Epic']['hours_spent'], 2); ?></td>
-								<td class="amount"><?php echo number_format($issue['Epic']['hours_remaining'], 2); ?></td>
-								<td class="amount"><?php echo sprintf("%.2f%%", $issue['Epic']['complete_percentage'] * 100); ?></td>
+								<!-- <td class="amount"><?php //echo number_format($issue['Epic']['hours_remaining'], 2); ?></td> -->
+								<!-- <td class="amount"><?php //echo //sprintf("%.2f%%", $issue['Epic']['complete_percentage'] * 100); ?></td> -->
+								<td><?php echo $issue['Epic']['status']; ?></td>
 								<td class="amount"><?php echo number_format($issue['Epic']['project_rate'], 2); ?></td>
 								<td class="amount"><?php echo number_format($issue['Epic']['month_hours'], 2); ?></td>
 								<td class="amount"><?php echo number_format($issue['Epic']['value_completed'], 2); ?></td>
@@ -76,8 +78,8 @@
  								<th class="amount"><?php echo number_format($business_value, 2); ?></th>
  								<th class="amount"><?php echo number_format($project_budget_hours, 2); ?></th>
  								<th class="amount"><?php echo number_format($total_hours_spent, 2); ?></th>
- 								<th class="amount"><?php echo number_format($total_hours_remaining, 2); ?></th>
- 								<th></th>
+ 								<th class="amount"><?php //echo number_format($total_hours_remaining, 2); ?></th>
+ 								<!-- <th></th> -->
  								<th class="amount"><?php
 								if(($total_hours_spent + $total_hours_remaining + $additional_hours) > 0) {
 									echo number_format(($business_value + $issue['Epic']['additional_rate'])/($total_hours_spent + $total_hours_remaining + $additional_hours), 2);
