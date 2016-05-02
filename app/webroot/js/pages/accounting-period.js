@@ -33,14 +33,11 @@ var AccountingPeriod = function () {
     					var object 		= $.parseJSON(response)
     					var maxResults 	= object.maxResults;
     					var startAt 	= object.startAt;
-    					var updated 	= object.updated;
+    					var updated 	= object.start;
     					startWorkLog	= object.total;
     				},
     				complete	: function(response){
     					handlerPI = false;
-		        		/*setTimeout(function() {
-		        			AccountingPeriod.updateProjectIssues(projectURL, worklogURL);
-		        		}, 60000);*/
 		        		if(startWorkLog != 0) {
 		        			AccountingPeriod.updateIssueWorklogs(worklogURL);
 		        		}
@@ -68,6 +65,14 @@ var AccountingPeriod = function () {
     				}
     			});
     		}
+        },
+        
+        hideReportAuthorColumn: function(authorList) {
+        	$.each(authorList, function (author, display) {
+        		if(display) {
+        			$('[data-col-id=' + author + ']').hide();
+        		}
+            });
         },
         
         SaveEpic: function() {

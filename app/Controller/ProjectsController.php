@@ -122,28 +122,42 @@ class ProjectsController extends AppController {
 		return $this->redirect(array('action' => 'index'));
 	}
 
-	public function updateProjectIssues($manualDate = null) {
+	public function updateProjectIssues($updated = null) {
 		$this->autoRender = false;
 
 		if($this->Session->check('Issue')) {
 			$updated = $this->Session->read('Issue.updated');
 			$startAt = $this->Session->read('Issue.startAt') + $this->Session->read('Issue.maxResults');
+			
 		} else {
-			$updated = $this->Project->Issue->field('MAX(updated)', array('Issue.id >' => 0));
+			if(is_null($updated)) {
+				$updated 		= $this->Project->Issue->field('MAX(updated)', array('Issue.id >' => 0));
+				$epicUpdated 	= $this->Project->Epic->field('MAX(updated)', array('Epic.id >' => 0));
+				
+				if($epicUpdated > $updated) {
+					$updated = $epicUpdated;
+				}
+			}
 			$startAt = 0;
 		}
+
+		$jql = array('jql' => 'updated >= "' . date('Y-m-d H:i', strtotime($updated)) . '" order by updated ASC',
+					 'startAt' => $startAt, 
+					 'maxResults' => 30);
+		$jdata 	= json_encode($jql);
+		$ch 	= curl_init();
+		curl_setopt_array($ch, array(
+								CURLOPT_URL 			=> 'http://jira.xenyo.net/rest/api/2/search',
+								CURLOPT_USERPWD 		=> 'matt:xenyo4748',
+								CURLOPT_POSTFIELDS 		=> $jdata,
+								CURLOPT_HTTPHEADER 		=> array('Content-type: application/json'),
+								CURLOPT_RETURNTRANSFER 	=> true));
+		$result = curl_exec($ch);
+		curl_close($ch);
+			
+		$issues = json_decode($result, true);
 		
-		if(is_null($updated)) $updated = '2014-01-01';
-		if(is_null($manualDate)) {
-			$updated = date('Y-m-d', strtotime($updated));
-		} else {
-			$updated = date('Y-m-d', strtotime($manualDate));
-		}
-		
-		$issues = file_get_contents(Router::url(array('controller' => 'pages', 'action' => 'curl', 'issues', $updated, $startAt), true));
-		$issues = json_decode($issues, true);
-		
-		$return['updated'] 		= $updated;
+		$return['start'] 		= $updated;
 		$return['startAt'] 		= $issues['startAt'];
 		$return['maxResults'] 	= $issues['maxResults'];
 		$return['total'] 		= $issues['total'];
@@ -197,7 +211,9 @@ class ProjectsController extends AppController {
 				
 				$issue['created'] = substr(str_replace('T', ' ', $result['fields']['created']), 0, strpos($result['fields']['created'], '.'));
 				$issue['updated'] = substr(str_replace('T', ' ', $result['fields']['updated']), 0, strpos($result['fields']['updated'], '.'));
-					
+				
+				$return['final'] = $issue['updated'];
+				
 				$this->Project->save($result['fields']['project']);
 				
 				$this->loadModel('User');

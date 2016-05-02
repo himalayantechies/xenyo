@@ -1,10 +1,3 @@
-<?php 
-/* BEGIN PAGE LEVEL PLUGINS */
-echo $this->Html->css(array( '../plugins/data-tables/DT_bootstrap'), null, array('inline' => false));
-echo $this->Html->script(array( '../plugins/data-tables/jquery.dataTables.min',
-                                '../plugins/data-tables/DT_bootstrap.js'), array('inline' => false));
-/* END PAGE LEVEL PLUGINS */
-?>
 <div class="row users index">
     <div class="col-md-12">
         <div class="portlet box blue">

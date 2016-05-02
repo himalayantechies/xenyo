@@ -94,10 +94,15 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 jQuery(document).ready(function() {    
    Metronic.init(); // init metronic core componets
    Layout.init(); // init layout
-   AccountingPeriod.updateProjectIssues('<?php echo Router::url('/projects/updateProjectIssues'); ?>',
-                                              '<?php echo Router::url('/worklogs/updateWorkLogs'); ?>');
+
+   <?php if($this->request->controller != 'clients' 
+   			&& $this->request->controller != 'users' 
+   			&& $this->request->controller != 'monthly_reports') {?>
+   AccountingPeriod.updateProjectIssues('<?php echo Router::url('/projects/updateProjectIssues'); ?>', 
+                                        '<?php echo Router::url('/worklogs/updateWorkLogs'); ?>');
    
-   //AccountingPeriod.updateIssueWorklogs('<?php echo Router::url('/worklogs/updateWorkLogs'); ?>');
+   AccountingPeriod.updateIssueWorklogs('<?php echo Router::url('/worklogs/updateWorkLogs'); ?>');
+   <?php } ?>
 });
 </script>
 </body>

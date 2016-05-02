@@ -95,6 +95,8 @@ class PagesController extends AppController {
 		curl_setopt($ch, CURLOPT_USERPWD, 'matt:xenyo4748');
 		$server_output = curl_exec($ch);
 		curl_close($ch);
+		
+		return json_decode($result);
 	}
 
 	public function deleted_list() {

@@ -157,6 +157,7 @@
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
+                                <th class="col-md-1"> <?php echo __('S. No.'); ?></th>
                                 <th class="col-md-1"> <?php echo __('Id'); ?></th>
                                 <th class="col-md-1"> <?php echo __('Author'); ?></th>
                                 <th class="col-md-1"> <?php echo __('UpdateAuthor'); ?></th>
@@ -166,8 +167,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                       	<?php foreach ($epic['Worklog'] as $worklog): ?>
+                       	<?php 
+                       	$totalTimeSpent = 0;
+                       	foreach ($epic['Worklog'] as $cnt => $worklog): 
+                       		$totalTimeSpent += $worklog['timeSpentSeconds']/3600;
+                       	?>
 							<tr>
+								<td><?php echo $cnt + 1; ?></td>
 								<td><?php echo $worklog['id']; ?></td>
 								<td><?php echo $worklog['author']; ?></td>
 								<td><?php echo $worklog['updateAuthor']; ?></td>
@@ -179,6 +185,15 @@
 								</th>
 							</tr>
 						<?php endforeach; ?>
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td><?php echo 'Total Time Spent' ?></td>
+								<td><?php echo $totalTimeSpent; ?></td>
+								<td></td>
+							</tr>
                         </tbody>
                     </table>
                     <?php endif; ?>

@@ -161,11 +161,15 @@ class WorklogsController extends AppController {
 			$worklogs = file_get_contents(Router::url(array('controller' => 'pages', 'action' => 'curl', 'worklog', $result['Issue']['id']), true));
 			$worklogs = json_decode($worklogs, true);
 			
+			//debug($worklogs);
+			
 			$this->Worklog->deleteAll(array('Worklog.issue_id' => $result['Issue']['id']), true);
 			
 			if(isset($worklogs['errorMessages'][0])) {
-				if($worklogs['errorMessages'][0] == 'Issue Does Not Exist') {
-					if($epic) {
+				if($worklogs['errorMessages'][0] == 'Issue Does Not Exist' ||
+				   $worklogs['errorMessages'][0] == 'You do not have the permission to see the specified issue.') {
+					
+				   	if($epic) {
 						$this->Worklog->Epic->id = $result['Issue']['id'];
 						$this->Worklog->Epic->delete();
 					} else {

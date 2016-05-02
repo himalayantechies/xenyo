@@ -61,6 +61,7 @@ echo $this->Html->script(array('pages/table-managed'), array('inline' => false))
                 <div class="caption"><i class="fa fa-cogs"></i><?php echo __('Epic'); ?></div>
                 <div class="actions">
                     <?php echo $this->Html->link(__('Add Epic'), array('action' => 'add'), array('class' => 'btn green')); ?>
+                    <?php echo $this->Html->link(__('Sync Epics'), array('controller' => 'projects', 'action' => 'updateProjectIssues'), array('class' => 'btn yellow')); ?>
                 </div>                    
             </div>
             <div class="portlet-body">

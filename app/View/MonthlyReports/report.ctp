@@ -93,11 +93,11 @@ $chart = array();
                         	<?php 
                         	$header_row_1 = $header_row_2 = $footer_row = '';
                         	foreach($authors as $key => $value) {
-                        		$header_row_1 .= $this->Html->tag('th', $value, array('colspan' => 4, 'class' => 'text-center'));
-								$header_row_2 .= $this->Html->tag('th', 'Hours');
-								$header_row_2 .= $this->Html->tag('th', 'Total');
-								$header_row_2 .= $this->Html->tag('th', '');
-								$header_row_2 .= $this->Html->tag('th', 'Average');
+                        		$header_row_1 .= $this->Html->tag('th', $value, array('colspan' => 4, 'class' => 'text-center', 'data-col-id' => $key));
+								$header_row_2 .= $this->Html->tag('th', 'Hours', array('data-col-id' => $key));
+								$header_row_2 .= $this->Html->tag('th', 'Total', array('data-col-id' => $key));
+								$header_row_2 .= $this->Html->tag('th', '', array('data-col-id' => $key));
+								$header_row_2 .= $this->Html->tag('th', 'Average', array('data-col-id' => $key));
 								$chart[$key]['label'] = $value;
 								$chart[$key]['lines'] = array('lineWidth' => 1);
 								$chart[$key]['shadowSize'] = 0;
@@ -137,7 +137,7 @@ $chart = array();
 	                    			$footer_row[$key]['hours_worked'] = 0;
 	                    		} 
 	                    	?>
-		                    	<td class="amount"><?php
+		                    	<td class="amount" data-col-id="<?php echo $key; ?>"><?php
 		                    	if($report[$key] != $value) {
 		                    		echo number_format($report[$key]['month_hours'], 2);
 									$footer_row[$key]['month_hours'] += $report[$key]['month_hours'];
@@ -145,7 +145,7 @@ $chart = array();
 		                    		echo number_format(0.00, 2);
 		                    	}
 		                    	?></td>
-		                    	<td class="amount"><?php
+		                    	<td class="amount" data-col-id="<?php echo $key; ?>"><?php
 		                    	if($report[$key] != $value) {
 		                    		echo number_format($report[$key]['value_completed'], 2);
 									$footer_row[$key]['value_completed'] += $report[$key]['value_completed'];
@@ -153,7 +153,7 @@ $chart = array();
 		                    		echo number_format(0.00, 2);
 		                    	}
 		                    	?></td>
-		                    	<td class="amount"><?php
+		                    	<td class="amount" data-col-id="<?php echo $key; ?>"><?php
 		                    	if($report[$key] != $value) {
 		                    		echo number_format($report[$key]['hours_worked'], 2);
 									$footer_row[$key]['hours_worked'] += $report[$key]['hours_worked'];
@@ -161,16 +161,16 @@ $chart = array();
 		                    		echo number_format(0.00, 2);
 		                    	}
 		                    	?></td>
-		                    	<td class="amount"><?php
+		                    	<td class="amount" data-col-id="<?php echo $key; ?>"><?php
 		                    	if($report[$key] != $value) {
 		                    		$monthly_average = $report[$key]['monthly_average'];
 		                    	} else {
 		                    		$monthly_average = 0.00;
 		                    	}
 	                    		echo number_format($monthly_average, 2);
-								//strtotime($date)
-								//substr($date, 0, 3)
-		                    	$chart[$key]['data'][substr($date, 0, 3)] = $monthly_average;
+	                    		//debug($date);debug(strtotime($date));debug(substr($date, 0, 3));
+		                    	//$chart[$key]['data'][substr($date, 0, 3)] = $monthly_average;
+								$chart[$key]['data'][$date] = $monthly_average;
 		                    	?></td>
 	                    	<?php } ?>
                     		</tr>
@@ -181,16 +181,25 @@ $chart = array();
                     			echo $this->Html->tag('th', number_format($total_hours, 2), array('class' => 'amount'));
                     			echo $this->Html->tag('th', number_format($total_monthly, 2), array('class' => 'amount'));
                     			echo $this->Html->tag('th', number_format($total_monthly/$total_hours, 2), array('class' => 'amount'));
-                        		foreach($footer_row as $row) {
-                        			echo $this->Html->tag('th', number_format($row['month_hours'], 2), array('class' => 'amount'));
-                        			echo $this->Html->tag('th', number_format($row['value_completed'], 2), array('class' => 'amount'));
-                        			echo $this->Html->tag('th', number_format($row['hours_worked'], 2), array('class' => 'amount'));
+                    			
+                        		foreach($footer_row as $key => $row) {
+                        			echo $this->Html->tag('th', number_format($row['month_hours'], 2), array('class' => 'amount', 'data-col-id' => $key));
+                        			echo $this->Html->tag('th', number_format($row['value_completed'], 2), array('class' => 'amount', 'data-col-id' => $key));
+                        			echo $this->Html->tag('th', number_format($row['hours_worked'], 2), array('class' => 'amount', 'data-col-id' => $key));
 									$average = 0;
 									if($row['hours_worked'] > 0) {
 										$average = $row['value_completed']/$row['hours_worked'];
+										
 									}
-                        			echo $this->Html->tag('th', number_format($average, 2), array('class' => 'amount'));
-                        		} ?>
+                        			echo $this->Html->tag('th', number_format($average, 2), array('class' => 'amount', 'data-col-id' => $key));
+                        			
+                        			if($row['month_hours'] == 0 && $row['value_completed'] == 0 && $row['hours_worked'] == 0) {
+                        				$hide_column[$key] = 1;
+                        			} else {
+                        				$hide_column[$key] = 0;
+                        			}
+                        		} 
+                        		?>
 	                    	</tr>
                        </tbody>
                     </table>
@@ -219,25 +228,28 @@ $chart = array();
 $count = count($chart);
 $chart_data  = '[';
 foreach($chart as $key => $value) {
-	$chart_data .= '{label:"' . $value['label'] . '",lines:{lineWidth:' . $value['lines']['lineWidth'] . '},shadowSize:' . $value['shadowSize'] . ',';
-	$averge_data  = 'data:[';
-	$countAvg = count($value['data']);
-	$datacount = 0;
-	$labels = '[';
-	foreach($value['data'] as $id => $average) {
-		$labels 	 .= '[' . $datacount . ',"' . $id . '"]'; 
-		$averge_data .= '[' . $datacount++ . ',' . round($average, 2) . ']';
-		if($countAvg-- > 1) {
-			$labels 	 .= ',';
-			$averge_data .= ',';
+	if(!$hide_column[$key]) {
+		$chart_data .= '{label:"' . $value['label'] . '",lines:{lineWidth:' . $value['lines']['lineWidth'] . '},shadowSize:' . $value['shadowSize'] . ',';
+		$averge_data  = 'data:[';
+		$countAvg = count($value['data']);
+		$datacount = 0;
+		$labels = '[';
+		foreach($value['data'] as $id => $average) {
+			$labels 	 .= '[' . $datacount . ',"' . $id . '"]';
+			$averge_data .= '[' . $datacount++ . ',' . round($average, 2) . ']';
+			if($countAvg-- > 1) {
+				$labels 	 .= ',';
+				$averge_data .= ',';
+			}
 		}
+		$averge_data .= ']}';
+		$chart_data .= $averge_data;
+		if($count-- > 1) {
+			$chart_data .= ',';
+		}
+		$labels .= ']';
+		
 	}
-	$averge_data .= ']}';
-	$chart_data .= $averge_data;
-	if($count-- > 1) {
-		$chart_data .= ',';
-	}
-	$labels .= ']';
 }
 $chart_data .= ']';
 ?>
@@ -247,6 +259,7 @@ var xaxis_label = <?php echo $labels; ?> ;
 
 jQuery(document).ready(function() {    
    AccountingPeriod.initDatePicker();
+   AccountingPeriod.hideReportAuthorColumn(<?php echo json_encode($hide_column); ?>);
    ChartsFlotcharts.init();
    ChartsFlotcharts.initCharts(chart_data, xaxis_label);
 });
