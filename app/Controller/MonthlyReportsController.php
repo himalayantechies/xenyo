@@ -17,7 +17,7 @@ class MonthlyReportsController extends AppController {
 	public $components = array('Paginator', 'Session');
 
 	public function report() {
-		$start 		= date('2014-10-1'); //'2015-02-01';
+		$start 		= date("Y-m-1", strtotime("-5 months")); //'2015-02-01';
 		$end		= date('Y-m-t'); //'2015-02-28';
 		
 		if ($this->request->is(array('post', 'put'))) {

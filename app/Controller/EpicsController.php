@@ -204,7 +204,7 @@ class EpicsController extends AppController {
 	}
 	
 	public function recalculate() {
-		$start 		= date('2014-10-1'); //'2015-02-01';
+		$start 		= date("Y-m-1", strtotime("-5 months")); //'2015-02-01';
 		$end		= date('Y-m-t'); //'2015-02-28';
 		$message	= '';
 		if ($this->request->is(array('post', 'put'))) {
@@ -228,7 +228,7 @@ class EpicsController extends AppController {
 			$message = 'Failed. Try Again';
 			foreach ($period as $dt) {
 				$this->report('Project', $dt->format('Y-m-1'), $dt->format('Y-m-t'));
-				$this->report('Support', $dt->format('Y-m-1'), $dt->format('Y-m-t'));
+				//$this->report('Support', $dt->format('Y-m-1'), $dt->format('Y-m-t'));
 			}
 			$message = 'Success';
 		} else {
@@ -290,6 +290,7 @@ class EpicsController extends AppController {
 				$issues[$epic_link][$worklog['Issue']['key']]['Worklog'][] = $worklog['Worklog'];
 			}
 		}
+		
 		$options = array();
 		$options['contain'] 	= array('Project', 'Worklog' => array('conditions' => array('Worklog.started BETWEEN ? AND ?' => array($start, $end), 'Worklog.deleted' => 0)));
 		$options['conditions'] 	= array('Epic.issue_type' => $type, $client, 'Epic.deleted' => 0,
@@ -371,15 +372,23 @@ class EpicsController extends AppController {
 				
 			$epics[$e_key]['Epic']['project_budget_hours'] 	= $epic['Epic']['business_value']/400;
 			$epics[$e_key]['Epic']['hours_spent'] 			= $hours_spent;
+			
 			$epics[$e_key]['Epic']['hours_remaining'] 		= $hours_remaining;
 			$epics[$e_key]['Epic']['complete_percentage'] 	= 0;
 			$epics[$e_key]['Epic']['project_rate'] 			= 0;
-			if(($hours_spent + $hours_remaining) > 0) {
+			
+			/* if(($hours_spent + $hours_remaining) > 0) {
 				$total_hours = $hours_spent + $hours_remaining;
 				$epics[$e_key]['Epic']['complete_percentage'] = $hours_spent/$total_hours;
 				$epics[$e_key]['Epic']['project_rate'] = ($epic['Epic']['business_value'] + $epic['Epic']['additional_rate'])/($total_hours + $epic['Epic']['additional_hours']);
-				//$epics[$e_key]['Epic']['project_rate'] = $epic['Epic']['business_value']/($total_hours + $epic['Epic']['additional_hours']);
+			} */
+			
+			if($epics[$e_key]['Epic']['project_budget_hours'] > $epics[$e_key]['Epic']['hours_spent']) {
+				$epics[$e_key]['Epic']['project_rate'] = $epic['Epic']['business_value']/$epics[$e_key]['Epic']['project_budget_hours'];
+			} elseif($epics[$e_key]['Epic']['project_budget_hours'] > $epics[$e_key]['Epic']['hours_spent'] || $epics[$e_key]['Epic']['status'] == 'Closed') {
+				$epics[$e_key]['Epic']['project_rate'] = $epic['Epic']['business_value']/$epics[$e_key]['Epic']['hours_spent'];
 			}
+			
 			$epics[$e_key]['Epic']['month_hours'] 		= $month_hours;
 			$epics[$e_key]['Epic']['value_completed'] 	= $epics[$e_key]['Epic']['project_rate'] * $month_hours;
 			

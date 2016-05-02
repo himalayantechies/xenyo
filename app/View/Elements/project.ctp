@@ -38,7 +38,12 @@
                     			$month_hours 			+= $issue['Epic']['month_hours'];
                     			$value_completed 		+= $issue['Epic']['value_completed'];
                     			$class 					= '';
-                    			if($issue['Epic']['complete_percentage'] == 1) {
+                    			//if($issue['Epic']['complete_percentage'] == 1) {
+                    			if($issue['Epic']['status'] == 'Open') {
+                    				if($issue['Epic']['hours_spent'] > $issue['Epic']['project_budget_hours']) {
+                    					$class = 'danger';
+                    				}
+                    			} elseif($issue['Epic']['status'] == 'Closed') {
                     				$class = 'success';
                     			}
                         	?>

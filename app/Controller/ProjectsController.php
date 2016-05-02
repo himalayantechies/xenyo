@@ -242,6 +242,10 @@ class ProjectsController extends AppController {
 				}
 			}
 		}
-		return json_encode($return);
+		if($this->request->is('ajax')) {
+			return json_encode($return);
+		} else {
+			$this->redirect($this->referer());
+		}
 	}
 }
