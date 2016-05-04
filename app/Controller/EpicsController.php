@@ -377,16 +377,17 @@ class EpicsController extends AppController {
 			$epics[$e_key]['Epic']['complete_percentage'] 	= 0;
 			$epics[$e_key]['Epic']['project_rate'] 			= 0;
 			
+			//Old formula
 			/* if(($hours_spent + $hours_remaining) > 0) {
 				$total_hours = $hours_spent + $hours_remaining;
 				$epics[$e_key]['Epic']['complete_percentage'] = $hours_spent/$total_hours;
 				$epics[$e_key]['Epic']['project_rate'] = ($epic['Epic']['business_value'] + $epic['Epic']['additional_rate'])/($total_hours + $epic['Epic']['additional_hours']);
 			} */
 			
-			if($epics[$e_key]['Epic']['project_budget_hours'] > $epics[$e_key]['Epic']['hours_spent']) {
-				$epics[$e_key]['Epic']['project_rate'] = $epic['Epic']['business_value']/$epics[$e_key]['Epic']['project_budget_hours'];
-			} elseif($epics[$e_key]['Epic']['project_budget_hours'] < $epics[$e_key]['Epic']['hours_spent'] || $epics[$e_key]['Epic']['status'] == 'Closed') {
+			if($epics[$e_key]['Epic']['project_budget_hours'] < $epics[$e_key]['Epic']['hours_spent'] || $epics[$e_key]['Epic']['status'] == 'Closed') {
 				$epics[$e_key]['Epic']['project_rate'] = $epic['Epic']['business_value']/$epics[$e_key]['Epic']['hours_spent'];
+			} elseif($epics[$e_key]['Epic']['project_budget_hours'] > $epics[$e_key]['Epic']['hours_spent']) {
+				$epics[$e_key]['Epic']['project_rate'] = $epic['Epic']['business_value']/$epics[$e_key]['Epic']['project_budget_hours'];
 			}
 			
 			$epics[$e_key]['Epic']['month_hours'] 		= $month_hours;
