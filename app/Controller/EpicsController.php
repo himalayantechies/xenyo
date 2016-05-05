@@ -228,7 +228,7 @@ class EpicsController extends AppController {
 			$message = 'Failed. Try Again';
 			foreach ($period as $dt) {
 				$this->report('Project', $dt->format('Y-m-1'), $dt->format('Y-m-t'));
-				//$this->report('Support', $dt->format('Y-m-1'), $dt->format('Y-m-t'));
+				$this->report('Support', $dt->format('Y-m-1'), $dt->format('Y-m-t'));
 			}
 			$message = 'Success';
 		} else {

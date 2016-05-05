@@ -87,7 +87,8 @@ var ChartsFlotcharts = function() {
                             var x = item.datapoint[0].toFixed(2),
                                 y = item.datapoint[1].toFixed(2);
 
-                            showTooltip(item.pageX, item.pageY, item.series.label + " of " + x + " = " + y);
+                            //showTooltip(item.pageX, item.pageY, item.series.label + " of " + x + " = " + y);
+                            showTooltip(item.pageX, item.pageY, item.series.label + " = " + y);
                         }
                     } else {
                         $("#tooltip").remove();
